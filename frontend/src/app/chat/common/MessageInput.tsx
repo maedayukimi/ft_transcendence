@@ -1,6 +1,5 @@
 import { useState, useCallback, useContext } from 'react'
 import { socket } from "../../global"
-import styles from './MessageInput.module.css';
 import { Message } from '../types/message';
 import { roomIdContext } from './roomIdContext';
 
@@ -25,7 +24,7 @@ export default function MessageInput({
             onSendMessage(inputText, roomId);
             setInputText('');
           }}
-          className={styles.form}
+          className="mt-auto flex w-full gap-2 border-t border-line bg-surface p-3 sm:p-4"
         >
             <input
                 id="inputText"
@@ -34,13 +33,13 @@ export default function MessageInput({
                 onChange={(event) => {
                   setInputText(event.target.value);
                 }}
-                className={styles.input}
+                className="field flex-1"
               />
             <input
               id="sendButton"
               type="submit"
               value="送信"
-              className={styles.submitButton}
+              className="btn btn-primary"
             />
           </form>
     );

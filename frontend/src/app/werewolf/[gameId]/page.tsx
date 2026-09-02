@@ -116,7 +116,7 @@ export default function WerewolfGame({
   if (!authorized) return null;
 
   if (!view) {
-    return <p>{error ?? '読み込み中...'}</p>;
+    return <p className="mx-auto max-w-3xl px-4 py-8 text-sm text-ink-muted">{error ?? '読み込み中...'}</p>;
   }
 
   const others = view.players.filter((p) => p.userId !== myUserId);
@@ -128,14 +128,14 @@ export default function WerewolfGame({
   const allReady = view.players.length >= 3 && view.players.every((p) => p.ready);
 
   return (
-    <div>
-      <h1>人狼ゲーム: {gameId}</h1>
-      {!connected && <p style={{ color: 'orange' }}>接続が切れました。再接続しています...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="mx-auto w-full max-w-3xl px-4 py-8">
+      <h1 className="mb-4">人狼ゲーム: {gameId}</h1>
+      {!connected && <p className="mb-3 rounded-md bg-amber-100 px-3 py-2 text-sm text-amber-800">接続が切れました。再接続しています...</p>}
+      {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
-      <ul>
+      <ul className="mb-6 flex flex-col gap-2">
         {view.players.map((p) => (
-          <li key={p.userId}>
+          <li className="card py-3 text-sm" key={p.userId}>
             {p.userName}
             {p.userId === myUserId ? '(あなた)' : ''}
             {view.phase === 'LOBBY' ? (p.ready ? ' - 準備完了' : ' - 未準備') : ''}
@@ -145,55 +145,58 @@ export default function WerewolfGame({
       </ul>
 
       {view.phase === 'LOBBY' && (
-        <div>
-          <button onClick={() => act('setReady', { ready: !me?.ready })}>
-            {me?.ready ? '準備解除' : '準備完了'}
-          </button>
-          {isHost ? (
-            <button onClick={() => act('startGame')} disabled={!allReady}>
-              ゲーム開始(3〜5人・全員準備完了で押せます)
+        <div className="card flex flex-col gap-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            <button className="btn" onClick={() => act('setReady', { ready: !me?.ready })}>
+              {me?.ready ? '準備解除' : '準備完了'}
             </button>
-          ) : (
-            <p>ホストがゲームを開始するのを待っています...</p>
-          )}
-          <button
-            onClick={() => {
-              act('leaveGame');
-              router.push('/werewolf');
-            }}
-          >
-            ロビーを離れる
-          </button>
+            {isHost ? (
+              <button className="btn btn-primary" onClick={() => act('startGame')} disabled={!allReady}>
+                ゲーム開始(3〜5人・全員準備完了で押せます)
+              </button>
+            ) : (
+              <p className="text-sm text-ink-muted">ホストがゲームを開始するのを待っています...</p>
+            )}
+            <button
+              className="btn"
+              onClick={() => {
+                act('leaveGame');
+                router.push('/werewolf');
+              }}
+            >
+              ロビーを離れる
+            </button>
+          </div>
 
           <h2>フレンドを招待</h2>
-          {friends.length === 0 && <p>招待できるフレンドがいません。</p>}
-          <ul>
+          {friends.length === 0 && <p className="text-sm text-ink-muted">招待できるフレンドがいません。</p>}
+          <ul className="flex flex-col gap-2">
             {friends.map((f) => (
-              <li key={f.userId}>
+              <li className="flex items-center justify-between gap-2 rounded-md bg-canvas px-3 py-2 text-sm" key={f.userId}>
                 {f.userName}
-                <button onClick={() => inviteFriend(f.userId, f.userName)}>招待</button>
+                <button className="btn btn-sm" onClick={() => inviteFriend(f.userId, f.userName)}>招待</button>
               </li>
             ))}
           </ul>
-          {inviteFeedback && <p>{inviteFeedback}</p>}
+          {inviteFeedback && <p className="text-sm text-ink-muted">{inviteFeedback}</p>}
         </div>
       )}
 
       {view.phase === 'ROLE_REVEAL' && (
-        <div>
-          <p>あなたの役職: {roleLabel(view.ownInitialRole)}</p>
+        <div className="card flex flex-col items-start gap-4">
+          <p className="text-lg font-semibold">あなたの役職: {roleLabel(view.ownInitialRole)}</p>
           {isHost ? (
-            <button onClick={() => act('advancePhase')}>次へ</button>
+            <button className="btn btn-primary" onClick={() => act('advancePhase')}>次へ</button>
           ) : (
-            <p>ホストが次に進めるのを待っています...</p>
+            <p className="text-sm text-ink-muted">ホストが次に進めるのを待っています...</p>
           )}
         </div>
       )}
 
       {view.phase === 'NIGHT_ACTION' && (
-        <div>
+        <div className="card flex flex-col items-start gap-4">
           {view.ownInitialRole === 'WEREWOLF' && (
-            <p>
+            <p className="text-sm">
               仲間の人狼:{' '}
               {view.werewolfTeammateUserIds.length > 0
                 ? view.werewolfTeammateUserIds
@@ -205,58 +208,61 @@ export default function WerewolfGame({
           <SeerPanel view={view} others={others} act={act} />
           <RobberPanel view={view} others={others} act={act} />
           {isHost ? (
-            <button onClick={() => act('advancePhase')}>次へ</button>
+            <button className="btn btn-primary" onClick={() => act('advancePhase')}>次へ</button>
           ) : (
-            <p>ホストが次に進めるのを待っています...</p>
+            <p className="text-sm text-ink-muted">ホストが次に進めるのを待っています...</p>
           )}
         </div>
       )}
 
       {view.phase === 'DISCUSSION' && (
-        <div>
-          <p>議論タイム。話し合いが終わったら投票に進みましょう。</p>
+        <div className="card flex flex-col items-start gap-4">
+          <p className="text-sm">議論タイム。話し合いが終わったら投票に進みましょう。</p>
           {isHost ? (
-            <button onClick={() => act('advancePhase')}>投票へ進む</button>
+            <button className="btn btn-primary" onClick={() => act('advancePhase')}>投票へ進む</button>
           ) : (
-            <p>ホストが投票を開始するのを待っています...</p>
+            <p className="text-sm text-ink-muted">ホストが投票を開始するのを待っています...</p>
           )}
         </div>
       )}
 
       {view.phase === 'VOTING' && (
-        <div>
-          <p>怪しいと思うプレイヤーに投票してください。</p>
-          {!me?.hasVoted &&
-            others.map((p) => (
-              <button key={p.userId} onClick={() => act('vote', { targetUserId: p.userId })}>
-                {p.userName} に投票
-              </button>
-            ))}
+        <div className="card flex flex-col items-start gap-4">
+          <p className="text-sm">怪しいと思うプレイヤーに投票してください。</p>
+          <div className="flex flex-wrap gap-2">
+            {!me?.hasVoted &&
+              others.map((p) => (
+                <button className="btn" key={p.userId} onClick={() => act('vote', { targetUserId: p.userId })}>
+                  {p.userName} に投票
+                </button>
+              ))}
+          </div>
           {isHost ? (
-            <button onClick={() => act('advancePhase')}>結果を見る</button>
+            <button className="btn btn-primary" onClick={() => act('advancePhase')}>結果を見る</button>
           ) : (
-            <p>ホストが結果を表示するのを待っています...</p>
+            <p className="text-sm text-ink-muted">ホストが結果を表示するのを待っています...</p>
           )}
         </div>
       )}
 
       {view.phase === 'RESULT' && view.result && (
-        <div>
+        <div className="card flex flex-col gap-4">
           <h2>{view.result.winner === 'VILLAGE' ? '村人陣営の勝利' : '人狼陣営の勝利'}</h2>
-          <ul>
+          <ul className="flex flex-col gap-2">
             {view.result.players.map((p) => (
-              <li key={p.userId}>
+              <li className="rounded-md bg-canvas px-3 py-2 text-sm" key={p.userId}>
                 {p.userName}: {roleLabel(p.finalRole)}
                 {p.executed ? '(処刑された)' : ''} - 得票数 {p.votesReceived}
               </li>
             ))}
           </ul>
           {isHost ? (
-            <button onClick={() => act('restartGame')}>同じメンバーでもう一度あそぶ</button>
+            <button className="btn btn-primary self-start" onClick={() => act('restartGame')}>同じメンバーでもう一度あそぶ</button>
           ) : (
-            <p>ホストがもう一度あそぶのを待っています...</p>
+            <p className="text-sm text-ink-muted">ホストがもう一度あそぶのを待っています...</p>
           )}
           <button
+            className="btn self-start"
             onClick={() => {
               act('leaveGame');
               router.push('/werewolf');
@@ -289,12 +295,14 @@ function SeerPanel({
   if (!showActionUI && !myInspection) return null;
 
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       {showActionUI && (
         <>
-          <p>占い師: 他プレイヤーを1人のカードを見るか、中央のカードを2枚とも見るか選べます。</p>
+          <p className="text-sm">占い師: 他プレイヤーを1人のカードを見るか、中央のカードを2枚とも見るか選べます。</p>
+          <div className="flex flex-wrap gap-2">
           {others.map((p) => (
             <button
+              className="btn"
               key={p.userId}
               onClick={() =>
                 act('seerAction', {
@@ -306,6 +314,7 @@ function SeerPanel({
             </button>
           ))}
           <button
+            className="btn"
             onClick={() =>
               act('seerAction', {
                 action: { kind: 'CENTER', centerCardIds: ['center-0', 'center-1'] },
@@ -314,6 +323,7 @@ function SeerPanel({
           >
             中央カードを2枚とも見る
           </button>
+          </div>
         </>
       )}
       {!showActionUI && myInspection && (
@@ -333,14 +343,14 @@ function SeerInspectionResult({
   if (inspection.kind === 'SEER_PLAYER') {
     const target = players.find((p) => p.userId === inspection.targetUserId);
     return (
-      <p>
+      <p className="text-sm">
         {target?.userName} の役職: {roleLabel(inspection.role)}
       </p>
     );
   }
   if (inspection.kind === 'SEER_CENTER') {
     return (
-      <p>
+      <p className="text-sm">
         中央カード:{' '}
         {inspection.centerCardIds
           .map((id, i) => `${id === 'center-0' ? '1' : '2'}枚目=${roleLabel(inspection.roles[i])}`)
@@ -367,19 +377,21 @@ function RobberPanel({
   if (!showActionUI && !myInspection) return null;
 
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       {showActionUI && (
         <>
-          <p>怪盗: 他のプレイヤーと役職を交換できます。</p>
-          {others.map((p) => (
-            <button key={p.userId} onClick={() => act('robberAction', { targetUserId: p.userId })}>
-              {p.userName} と交換する
-            </button>
-          ))}
+          <p className="text-sm">怪盗: 他のプレイヤーと役職を交換できます。</p>
+          <div className="flex flex-wrap gap-2">
+            {others.map((p) => (
+              <button className="btn" key={p.userId} onClick={() => act('robberAction', { targetUserId: p.userId })}>
+                {p.userName} と交換する
+              </button>
+            ))}
+          </div>
         </>
       )}
       {!showActionUI && myInspection && (
-        <p>あなたの新しい役職: {roleLabel(myInspection.newRole)}</p>
+        <p className="text-sm">あなたの新しい役職: {roleLabel(myInspection.newRole)}</p>
       )}
     </div>
   );

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { socket } from './global';
+import './globals.css';
 
 interface WerewolfInvite {
   gameId: string;
@@ -33,28 +34,31 @@ export default function RootLayout({
       lang="ja"
     >
       <body>
-        <div>
+        <div className="flex min-h-screen flex-col">
           {invite && (
-            <div style={{ padding: '0.75rem', background: '#fff3cd', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-              <span>{invite.fromUserName} さんが人狼ゲームに招待しています。</span>
-              <button
-                onClick={() => {
-                  router.push(`/werewolf/${invite.gameId}`);
-                  setInvite(null);
-                }}
-              >
-                参加する
-              </button>
-              <button onClick={() => setInvite(null)}>閉じる</button>
+            <div className="flex flex-col gap-2 border-b border-amber-300 bg-amber-100 px-4 py-3 text-sm sm:flex-row sm:items-center sm:gap-4">
+              <span className="flex-1">{invite.fromUserName} さんが人狼ゲームに招待しています。</span>
+              <div className="flex gap-2">
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => {
+                    router.push(`/werewolf/${invite.gameId}`);
+                    setInvite(null);
+                  }}
+                >
+                  参加する
+                </button>
+                <button className="btn btn-sm" onClick={() => setInvite(null)}>閉じる</button>
+              </div>
             </div>
           )}
-          <main>
+          <main className="flex min-h-0 flex-1 flex-col">
             {children}
           </main>
-          <footer style={{ padding: '1rem', borderTop: '1px solid #ccc', marginTop: '2rem' }}>
-            <Link href="/privacy">プライバシーポリシー</Link>
-            {' | '}
-            <Link href="/terms">利用規約</Link>
+          <footer className="border-t border-line bg-surface px-4 py-4 text-sm text-ink-muted">
+            <Link className="hover:text-ink hover:underline" href="/privacy">プライバシーポリシー</Link>
+            <span className="px-2">|</span>
+            <Link className="hover:text-ink hover:underline" href="/terms">利用規約</Link>
           </footer>
         </div>
       </body>

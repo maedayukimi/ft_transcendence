@@ -123,52 +123,53 @@ export default function FriendsPage() {
   }
 
   return (
-    <div>
-      <nav style={{ display: 'flex', gap: '1rem' }}>
-        <Link href="/chat">Chat</Link>
-        <Link href="/werewolf">Werewolf</Link>
-        <button onClick={handleLogout}>Log Out</button>
+    <div className="mx-auto w-full max-w-3xl px-4 py-8">
+      <nav className="mb-6 flex flex-wrap items-center gap-1">
+        <Link className="navlink" href="/chat">Chat</Link>
+        <Link className="navlink" href="/werewolf">Werewolf</Link>
+        <button className="navlink" onClick={handleLogout}>Log Out</button>
       </nav>
-      <h1>フレンド一覧</h1>
+      <h1 className="mb-4">フレンド一覧</h1>
 
-      <form onSubmit={handleSendRequest}>
-        <label>
+      <form className="card flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={handleSendRequest}>
+        <label className="label flex-1">
           ユーザー名でフレンド申請
           <input
+            className="field"
             type="text"
             value={friendUserName}
             onChange={(e) => setFriendUserName(e.target.value)}
             required
           />
         </label>
-        <button type="submit">申請する</button>
+        <button className="btn btn-primary" type="submit">申請する</button>
       </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {message && <p style={{ color: 'green' }}>{message}</p>}
+      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {message && <p className="mt-3 text-sm text-green-700">{message}</p>}
 
-      <h2>届いているフレンド申請</h2>
-      <ul>
+      <h2 className="mt-8 mb-3">届いているフレンド申請</h2>
+      <ul className="flex flex-col gap-2">
         {pendingRequests.map((r) => (
-          <li key={r.userId}>
-            <Link href={`/profile/${r.userId}`}>{r.userName}</Link>
-            <button onClick={() => handleAccept(r.userId)}>承認</button>
-            <button onClick={() => handleReject(r.userId)}>拒否</button>
+          <li className="card flex flex-wrap items-center gap-2 py-3" key={r.userId}>
+            <Link className="flex-1 font-medium hover:underline" href={`/profile/${r.userId}`}>{r.userName}</Link>
+            <button className="btn btn-sm btn-primary" onClick={() => handleAccept(r.userId)}>承認</button>
+            <button className="btn btn-sm" onClick={() => handleReject(r.userId)}>拒否</button>
           </li>
         ))}
       </ul>
-      {pendingRequests.length === 0 && <p>届いている申請はありません。</p>}
+      {pendingRequests.length === 0 && <p className="text-sm text-ink-muted">届いている申請はありません。</p>}
 
-      <h2>フレンド</h2>
-      <ul>
+      <h2 className="mt-8 mb-3">フレンド</h2>
+      <ul className="flex flex-col gap-2">
         {friends.map((f) => (
-          <li key={f.userId}>
-            <Link href={`/profile/${f.userId}`}>{f.userName}</Link>
-            <button onClick={() => handleMessage(f.userName)}>メッセージ</button>
-            <button onClick={() => handleRemove(f.userId)}>解除</button>
+          <li className="card flex flex-wrap items-center gap-2 py-3" key={f.userId}>
+            <Link className="flex-1 font-medium hover:underline" href={`/profile/${f.userId}`}>{f.userName}</Link>
+            <button className="btn btn-sm" onClick={() => handleMessage(f.userName)}>メッセージ</button>
+            <button className="btn btn-sm" onClick={() => handleRemove(f.userId)}>解除</button>
           </li>
         ))}
       </ul>
-      {friends.length === 0 && <p>フレンドはまだいません。</p>}
+      {friends.length === 0 && <p className="text-sm text-ink-muted">フレンドはまだいません。</p>}
     </div>
   );
 }

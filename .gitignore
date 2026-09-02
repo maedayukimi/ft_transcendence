@@ -1,0 +1,9 @@
+# 環境変数(認証情報・JWT秘密鍵)。.env.example だけをコミットする
+.env
+.env.*
+!.env.example
+
+# archive/ は削除待ちの退避場所
+archive/
+
+.DS_Store

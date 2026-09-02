@@ -90,10 +90,12 @@ Every change was reviewed, run, and manually tested by the team in the running a
 | Entity | Key fields | Relationships |
 |---|---|---|
 | `User` | `userId` (PK), `userName`, `emailAddress`, `password`, `timeStamp` | many-to-many with `Chatroom` |
-| `Chatroom` | `roomId` (PK, uuid), `roomName`, `roomType`, `save` | many-to-many with `User` (via `chatroom_users`) |
+| `Chatroom` | `roomId` (PK, uuid), `roomName`, `roomType`, `save`, `timeStamp` | many-to-many with `User` (via the `chatroom_users` join table) |
 | `Message` | `msgId` (PK), `text`, `timeStamp` | many-to-one `Chatroom`, many-to-one `User` |
-| `Friend` | `id` (PK), `userId`, `friendUserId`, `timeStamp` | logical reference to `User.userId` on both sides (one row per direction) |
+| `Friend` | `id` (PK), `requesterId`, `recipientId`, `status` (`PENDING` / `ACCEPTED`), `timeStamp` | logical reference to `User.userId` on both sides; **one row per relationship**, with the direction recorded by `requesterId` / `recipientId` |
 | `MatchResult` | `id` (PK), `gameId`, `userId`, `finalRole`, `won`, `playerCount`, `timeStamp` | logical reference to `User.userId`; one row per player per completed Werewolf match |
+
+A friend request is stored as a single `Friend` row in `PENDING` state; accepting it flips the same row to `ACCEPTED` rather than inserting a second row, and unfriending / cancelling / rejecting all delete the row regardless of its direction. Column names in the database are snake_case (`requester_id`, `recipient_id`, `time_stamp`, ...); the names above are the TypeORM entity properties used in the code.
 
 The Werewolf game's live state (current phase, votes, night-action results) is kept in memory for the duration of a match and is only persisted to `MatchResult` once a match reaches its result screen — the game does not need a full match to be replayed from the database, only the final outcome for statistics/history.
 

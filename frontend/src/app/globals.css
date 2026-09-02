@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #ffffff;
+  --color-canvas: #f5f6f8;
+  --color-line: #d8dbe0;
+  --color-ink: #1b1d21;
+  --color-ink-muted: #5b616b;
+  --color-brand: #2b6cb0;
+  --color-brand-strong: #22558c;
+}
+
+@layer base {
+  body {
+    @apply bg-canvas text-ink antialiased;
+  }
+  h1 {
+    @apply text-2xl font-bold sm:text-3xl;
+  }
+  h2 {
+    @apply text-lg font-semibold sm:text-xl;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md border border-line bg-surface px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply border-transparent bg-brand text-white hover:bg-brand-strong;
+  }
+  .btn-sm {
+    @apply px-2 py-1 text-xs;
+  }
+  .field {
+    @apply w-full rounded-md border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/30;
+  }
+  .label {
+    @apply flex flex-col gap-1 text-sm font-medium text-ink-muted;
+  }
+  .card {
+    @apply rounded-lg border border-line bg-surface p-4 shadow-sm sm:p-6;
+  }
+  .navlink {
+    @apply rounded-md px-2 py-1 text-sm font-medium text-ink-muted transition-colors hover:bg-canvas hover:text-ink;
+  }
+}

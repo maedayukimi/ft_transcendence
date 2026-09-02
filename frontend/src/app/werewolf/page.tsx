@@ -37,24 +37,29 @@ export default function WerewolfLobby() {
   }
 
   return (
-    <div>
-      <nav style={{ display: 'flex', gap: '1rem' }}>
-        <Link href="/chat">Chat</Link>
-        <Link href="/friends">Friends</Link>
-        <button onClick={handleLogout}>Log Out</button>
+    <div className="mx-auto w-full max-w-2xl px-4 py-8">
+      <nav className="mb-6 flex flex-wrap items-center gap-1">
+        <Link className="navlink" href="/chat">Chat</Link>
+        <Link className="navlink" href="/friends">Friends</Link>
+        <button className="navlink" onClick={handleLogout}>Log Out</button>
       </nav>
-      <h1>人狼ゲーム</h1>
-      <label>
-        ゲームID
-        <input
-          type="text"
-          value={gameId}
-          onChange={(e) => setGameId(e.target.value)}
-        />
-      </label>
-      <button onClick={() => enterGame('createGame')}>新しいゲームを作成</button>
-      <button onClick={() => enterGame('joinGame')}>既存のゲームに参加</button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h1 className="mb-4">人狼ゲーム</h1>
+      <div className="card flex flex-col gap-4">
+        <label className="label">
+          ゲームID
+          <input
+            className="field"
+            type="text"
+            value={gameId}
+            onChange={(e) => setGameId(e.target.value)}
+          />
+        </label>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button className="btn btn-primary flex-1" onClick={() => enterGame('createGame')}>新しいゲームを作成</button>
+          <button className="btn flex-1" onClick={() => enterGame('joinGame')}>既存のゲームに参加</button>
+        </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+      </div>
     </div>
   );
 }
