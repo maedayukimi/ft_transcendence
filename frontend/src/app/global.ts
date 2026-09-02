@@ -10,27 +10,11 @@ declare global {
 
 export const getSocket = () => {
   if (!global.socketInstance) {
-    console.log('🔌 Socket.IO接続を作成');
     global.socketInstance = io({
       transports: ['websocket', 'polling'],
       autoConnect: false,  // 自動接続を無効化
       withCredentials: true,
     });
-
-    // 接続イベントのデバッグ
-    global.socketInstance.on('connect', () => {
-      console.log('✅ 接続成功! Socket ID:', global.socketInstance?.id);
-    });
-
-    global.socketInstance.on('disconnect', () => {
-      console.log('❌ 切断されました');
-    });
-
-    global.socketInstance.on('reconnect', () => {
-      console.log('🔄 再接続しました! Socket ID:', global.socketInstance?.id);
-    });
-  } else {
-    console.log('♻️  既存のSocket.IO接続を再利用 Socket ID:', global.socketInstance?.id);
   }
   return global.socketInstance;
 };
@@ -39,7 +23,6 @@ export const getSocket = () => {
 export const connectSocket = () => {
   const socket = getSocket();
   if (!socket.connected) {
-    console.log('🔌 Socket接続を開始します');
     socket.connect();
   }
 };
@@ -48,7 +31,6 @@ export const connectSocket = () => {
 export const disconnectSocket = () => {
   const socket = getSocket();
   if (socket.connected) {
-    console.log('🔌 Socket接続を切断します');
     socket.disconnect();
   }
 };

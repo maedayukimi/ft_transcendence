@@ -11,14 +11,12 @@ export default function Chatroom() {
     const [chatLog, setChatLog] = useState<Message[] >([]);
     const [sendError, setSendError] = useState<string | null>(null);
     const currentUser = getCurrentUser();
-    console.log(roomId);
 
     // ルームに参加。ルームを切り替えたとき/離れるときは前のルームを
     // ちゃんとleaveしないと、そのルーム宛のブロードキャストを受信し続けてしまう。
     useEffect(() => {
         if (roomId) {
             socket.emit('joinRoom', roomId);
-            console.log(`Joined room: ${roomId}`);
         }
         return () => {
             if (roomId) {
@@ -64,7 +62,6 @@ export default function Chatroom() {
             // 過去にjoinしたまま残っている別ルーム宛のイベントを拾わないよう、
             // 表示中のルーム宛のメッセージだけ反映する。
             if (String(message.roomId) !== roomId) return;
-            console.log('received:', message);
             setChatLog(prev => [...prev, message]);  // 関数型更新
         };
 
@@ -86,11 +83,9 @@ export default function Chatroom() {
     const handleSendMessage = useCallback((text: string, roomId: string): void => {
         socket.emit('sendMessage', { roomId: roomId, text: text }, (response: any) => {
             if (response.error) {
-                console.error('メッセージ送信エラー:', response.error);
                 setSendError(response.error);
             } else {
                 setSendError(null);
-                console.log('メッセージ送信成功:', response);
                 // receivedMessageイベントでchatLogが更新されるので、ここでは何もしない
             }
         });

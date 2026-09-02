@@ -7,7 +7,6 @@ export default function SingUp() {
     const router = useRouter();
     async function handleSubmit(event:React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        console.log(event.currentTarget);
         const formData = new FormData(event.currentTarget);
         try {
             const response = await fetch(
@@ -33,7 +32,6 @@ export default function SingUp() {
             }
             const data = await response.json();
             setCurrentUser(data.userId, data.userName);
-            console.log(data);
             if (!data.success)
                 throw new Error('登録失敗');
 
