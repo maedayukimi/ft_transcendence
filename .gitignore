@@ -1,0 +1,7 @@
+# ローカル環境変数。実際の認証情報は絶対にコミットしない(テンプレートは .env.example)。
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
