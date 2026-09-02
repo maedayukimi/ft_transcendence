@@ -1,0 +1,86 @@
+/* layout.module.css */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.header {
+  background-color: #fff;
+  border-bottom: 2px solid #000;
+  padding: 8px 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.aside {
+  width: 250px;
+  border-right: 1px solid #ccc;
+  padding: 16px;
+  background-color: #f5f5f5;
+  overflow-y: auto;
+}
+
+.heading {
+  margin-bottom: 16px;
+}
+
+.form {
+  margin-bottom: 16px;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 8px 16px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #555;
+}
+
+
+.roomIDsContainer {
+  display: flex;
+  flex-direction: column;
+  
+}
+.roomItem {
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.roomItem:hover {
+  background-color: #ddd;
+}
+
+.main {
+  flex: 1;
+  overflow: hidden;
+}
