@@ -109,7 +109,7 @@ export default function ChatLayout({
     }
 
     return (
-      <div className="flex h-[calc(100vh-8rem)] min-h-[32rem] flex-col">
+      <div className="flex min-h-0 flex-1 flex-col">
         <header className="flex flex-wrap items-center gap-3 border-b border-line bg-surface px-4 py-3 shadow-sm">
           <h1 className="text-base font-bold sm:text-lg">Chat Application</h1>
           <nav className="flex flex-1 flex-wrap items-center gap-1">
@@ -203,11 +203,11 @@ export default function ChatLayout({
                 <button className='btn btn-sm mt-3 w-full' onClick={() => {dialogRef.current?.close();}}>Close</button>
             </dialog>
         </header>
-        <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
           {/* サイドバー */}
           <Sidebar rooms={rooms} onRoomSelect={handleRoomChange} onDeleteRoom={handleDeleteRoom}/>
           {/* メインコンテンツエリア */}
-          <main className="flex-1 overflow-hidden">
+          <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
             {children}
           </main>
         </div>

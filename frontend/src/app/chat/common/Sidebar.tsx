@@ -12,7 +12,7 @@ export default function Sidebar({ rooms, onRoomSelect, onDeleteRoom }: SidebarPr
     const [isPrivate, setIsPrivate] = useState('private');
 
     return (
-        <aside className="w-full shrink-0 overflow-y-auto border-b border-line bg-canvas p-4 md:max-h-none md:w-64 md:border-r md:border-b-0">
+        <aside className="max-h-56 w-full shrink-0 overflow-y-auto border-b border-line bg-canvas p-4 md:max-h-none md:w-64 md:border-r md:border-b-0">
           <div className="mb-4 grid grid-cols-2 gap-2">
             <button
               className={`btn btn-sm ${isPrivate === 'private' ? 'btn-primary' : ''}`}

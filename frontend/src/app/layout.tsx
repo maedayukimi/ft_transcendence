@@ -52,7 +52,7 @@ export default function RootLayout({
               </div>
             </div>
           )}
-          <main className="flex-1">
+          <main className="flex min-h-0 flex-1 flex-col">
             {children}
           </main>
           <footer className="border-t border-line bg-surface px-4 py-4 text-sm text-ink-muted">
