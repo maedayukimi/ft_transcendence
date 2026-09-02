@@ -28,11 +28,9 @@ export default function ChatLayout({
         connectSocket();
         // joinRoomイベントリスナーを設定
         const handleJoinRoom = (response: ChatroomProps) => {
-            console.log(`joinRoom received: userNames=${JSON.stringify(response.userNames)}, roomType=${response.roomType}`);
             // privateの場合は相手の名前をルーム名として使う
             if (response.roomType === 'private' && response.otherUserName) {
                 response.roomName = response.otherUserName;
-                console.log(`Set roomName to: ${response.roomName}`);
             }
             setRooms(prevRooms => [...prevRooms, response]);
         };
@@ -52,7 +50,6 @@ export default function ChatLayout({
 
         if (socket.connected) {
             socket.emit('getAllRoom', Number(getCurrentUser().userId), (response: ChatroomProps[]) => {
-            console.log(`getAllRoom response: ${JSON.stringify(response)}`);
             // privateルームの場合、roomNameを相手の名前に設定
             const processedRooms = response.map(room => {
                 if (room.roomType === 'private' && room.otherUserName) {
@@ -65,7 +62,6 @@ export default function ChatLayout({
         } else {
             socket.once('connect', () => {
             socket.emit('getAllRoom', Number(getCurrentUser().userId), (response: ChatroomProps[]) => {
-            console.log(`getAllRoom response: ${JSON.stringify(response)}`);
             // privateルームの場合、roomNameを相手の名前に設定
             const processedRooms = response.map(room => {
                 if (room.roomType === 'private' && room.otherUserName) {
@@ -77,7 +73,6 @@ export default function ChatLayout({
             });
         });
     }
-        console.log(`current_user is ${getCurrentUser().userId}`);
 
         // クリーンアップ: イベントリスナーを削除
         return () => {
@@ -94,8 +89,6 @@ export default function ChatLayout({
       socket.emit('deleteRoom', roomId, (response: ChatroomProps & { save: boolean }) => {
         if (response.save) {
           setRooms(rooms.filter((r) => r.roomId !== roomId));
-        } else {
-          console.error('ルームの削除に失敗しました:', roomId);
         }
       });
     };
@@ -128,11 +121,9 @@ export default function ChatLayout({
                     if (roomType === 'private') {
                         const targetUserName = String(formData.get('userName') ?? '').trim();
                         socket.emit('createRoom', { targetUserNames: [targetUserName], roomName: '', roomType: 'private' }, (response: ChatroomProps & { error?: string }) => {
-                        console.log(`createRoom response: userNames=${JSON.stringify(response.userNames)}, roomType=${response.roomType}`);
                         if (response.save) {
                             //privateの場合は相手の名前をルーム名として使う
                             response.roomName = response.otherUserName ?? response.roomName;
-                            console.log(`Set roomName to: ${response.roomName}`);
                             // 既に同じ相手とのprivateルームが一覧にあれば重複追加しない
                             setRooms(prev => prev.some(r => r.roomId === response.roomId) ? prev : [...prev, response]);
                             form.reset();
@@ -145,7 +136,6 @@ export default function ChatLayout({
                         // groupルームを作成して相手を招待(ユーザー名指定)
                         const groupName = String(formData.get('groupName'));
                         socket.emit('createRoom', { targetUserNames: groupUserNames, roomName: groupName, roomType: 'group' }, (response: ChatroomProps & { error?: string }) => {
-                        console.log(`createRoom response: ${JSON.stringify(response)}`);
                         if (response.save) {
                             setRooms([...rooms, response]);
                             setGroupUserNames([]);

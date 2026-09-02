@@ -64,12 +64,10 @@ Every change was reviewed, run, and manually tested by the team in the running a
 
 | Login | Role(s) | Responsibilities |
 |---|---|---|
-| mawako | Product Owner, Tech Lead | Project direction, module selection, architecture decisions, core Werewolf game implementation |
-| sumedai | Developer | _TODO: fill in_ |
-| kinamura | Developer | _TODO: fill in_ |
-| sninomiy | Developer | _TODO: fill in_ |
-
-*(Role assignment is provisional and should be updated to reflect what each member actually worked on.)*
+| mawako | Product Owner | Game concept for the Werewolf ruleset, the basic screen design, and overall product direction / module selection |
+| sumedai | Tech Lead | Technical direction and architecture decisions across the stack |
+| kinamura | QA Engineer | Testing and quality assurance, plus refactoring across the codebase |
+| sninomiy | Developer | UI / UX and styling: front-end design system, responsive layouts, visual consistency across screens |
 
 ## Project Management
 
@@ -103,12 +101,15 @@ The Werewolf game's live state (current phase, votes, night-action results) is k
 
 | Feature | Description | Worked on by |
 |---|---|---|
-| Signup / Login | Email + password authentication, JWT stored in an httpOnly cookie | mawako |
-| Real-time chat | Private and group chat rooms, message persistence, invites | _(pre-existing, contributor TBD)_ |
-| Werewolf game | Full multiplayer game loop: lobby, roles, simultaneous night actions, discussion, voting, result, restart | mawako (with Claude Code) |
-| Reconnection handling | Automatic rejoin after a dropped connection mid-game | mawako (with Claude Code) |
-| Profile page | View a user's join date, win/loss stats, and match history | mawako (with Claude Code) |
-| Friends system | Add/remove/list friends by username | mawako (with Claude Code) |
+| Signup / Login | Email + password authentication, JWT stored in an httpOnly cookie | sumedai |
+| Real-time chat | Private and group chat rooms, message persistence, invites | kinamura |
+| Werewolf game | Full multiplayer game loop: lobby, roles, simultaneous night actions, discussion, voting, result, restart | mawako (concept, rules, screen flow), sumedai (implementation, with Claude Code) |
+| Reconnection handling | Automatic rejoin after a dropped connection mid-game | sumedai (with Claude Code) |
+| Profile page | View a user's join date, win/loss stats, and match history | kinamura |
+| Friends system | Add/remove/list friends by username | kinamura |
+| HTTPS / deployment | nginx reverse proxy with TLS termination, single-command Docker Compose stack | sumedai |
+| UI and styling | Tailwind-based design system, responsive layouts across all screens | sninomiy |
+| Testing and refactoring | Jest test suite for the game rules, play-testing, clean-up passes across the codebase | kinamura |
 
 ## Modules
 
@@ -128,10 +129,8 @@ We targeted the required **14 points**:
 
 ## Individual Contributions
 
-> _TODO: each member should fill in their own section below with what they specifically built, any challenges they ran into, and how they solved them._
-
-- **mawako**: Directed module selection and architecture. Implemented the Werewolf game end-to-end (game rules, WebSocket gateway, frontend UI) together with Claude Code, including several bug fixes found through manual play-testing (robber role mis-attribution, abandoned-game memory leak, missing reconnection logic, stale finished-lobby reuse). Implemented the profile/friends/match-history module, wired real environment-variable configuration (`.env`) for database credentials and the JWT secret, switched password storage to bcrypt hashing, added the Privacy Policy / Terms of Service pages, added request validation (class-validator on the backend, HTML5 constraints on the frontend forms), and set up HTTPS (an nginx reverse proxy with a self-signed certificate, single HTTPS entry point for the frontend, API, and WebSocket traffic).
-- **sumedai**: _TODO_
-- **kinamura**: _TODO_
-- **sninomiy**: _TODO_
+- **mawako**: Acted as Product Owner. Defined the game concept — we deliberately moved away from the classic Pong project and built a social deduction game instead — and settled on the simplified *One Night Ultimate Werewolf* ruleset (Werewolf / Villager / Seer / Robber, 3-5 players, a single night phase followed by discussion and a vote) that the implementation is based on. Designed the basic screen flow: lobby → role reveal → night action → discussion → voting → result, and how players move between the chat, friends, and game screens. Drove module selection and the overall product direction, decided which behaviours counted as bugs during play-testing sessions (robber role mis-attribution, abandoned games left in memory, missing reconnection after a network drop, finished lobbies being silently reused), and reviewed the resulting changes.
+- **sumedai**: Acted as Tech Lead. Chose the stack (NestJS + Next.js + TypeORM on PostgreSQL) and decided how the app is split between REST endpoints and Socket.IO gateways. Built the authentication flow (email/password signup and login, bcrypt-hashed passwords, JWT delivered in an httpOnly cookie, and the same token reused to authenticate WebSocket handshakes) and implemented the Werewolf game engine and its gateway against the rules mawako specified. Set up the deployment side: the Docker Compose stack, the nginx reverse proxy that terminates TLS so that the app, the API, and the WebSocket traffic all share a single HTTPS entry point, and the move of database credentials and the JWT secret into environment variables.
+- **kinamura**: Acted as QA engineer. Ran the play-testing sessions that surfaced the game's real bugs (a robbed player being able to act again as the robber, abandoned games never being freed from memory, no automatic rejoin after a network drop, finished lobbies being silently reused) and reduced each to reproducible steps before it was fixed. Maintained the Jest suite for the game rules (`werewolf.domain.spec.ts`) and the scripted end-to-end checks run against the live Docker stack. Also implemented the chat rooms and the profile / friends screens, and did clean-up passes across the codebase.
+- **sninomiy**: Owned the UI/UX and styling side of the front-end. Introduced Tailwind CSS as the project's styling solution — it was listed as a dependency but never actually loaded, so the app was really running on CSS Modules and inline styles — and rewrote every screen and component on top of a small shared design system (theme tokens plus `btn` / `field` / `card` / `navlink` classes) so that the UI is visually consistent instead of styled ad hoc per page. Made the layouts responsive for both desktop and mobile/tablet widths, including the chat screen, whose height had been derived from a hard-coded footer size. Also corrected the database schema section of this README, which no longer matched the `Friend` entity in the code.
 
