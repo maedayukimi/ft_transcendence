@@ -287,9 +287,11 @@ export class ChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('getAllRoom')
   async handlegetAllRoom(
-    @MessageBody() currentUserId: number,
     @ConnectedSocket() socket: Socket,
   ) {
+    // 一覧の対象は認証済みsocket.dataのユーザー本人に固定する。
+    // クライアント申告のuserIdを使うと、他人のルーム一覧とメンバー名が取得できてしまう。
+    const currentUserId: number = socket.data.userId;
     this.logger.log(`getAllRoom called by ${socket.id}, userId: ${currentUserId}`);
     const rooms = await this.chatService.getAllRoom(currentUserId);
 
@@ -314,38 +316,6 @@ export class ChatGateway implements OnGatewayConnection {
     return roomsWithUserNames;
   }
 
-  @SubscribeMessage('login')
-  async handleLogin(
-    @MessageBody() data: { userId: number, userName: string },
-    @ConnectedSocket() socket: Socket
-  ) {
-    socket.data.userId = data.userId;
-    socket.data.userName = data.userName;
-    this.logger.log(`User ${data.userName} logged in`);
-  }
-
-  @SubscribeMessage('inviteUser')
-  async handlegetInviteUser(
-    @MessageBody() data: {
-      userId: number,
-      save: boolean,
-      roomId: string,
-      roomName: string,
-      roomType: string
-    },
-    @ConnectedSocket() socket: Socket,
-  ) {
-    const {userId, roomId, roomName, save, roomType } = data;
-    this.logger.log(`getAllRoom called by ${socket.id}`);
-    const sockets = await this.server.fetchSockets();
-    const targetSockt = sockets.find((socket) => socket.data.userId === userId );
-    if (targetSockt) {
-      targetSockt.emit('reciveUser', { save, roomId, roomName, roomType });
-      return { success: true };
-    }
-    return { success: false };
-  }
-  
   @SubscribeMessage('deleteRoom')
   async handlegetdeleteRoom(
     @MessageBody() roomId: string,

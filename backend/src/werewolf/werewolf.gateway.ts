@@ -123,7 +123,7 @@ export class WerewolfGateway implements OnGatewayConnection, OnGatewayDisconnect
     @ConnectedSocket() socket: Socket,
   ) {
     return this.run(socket, data.gameId, () =>
-      this.werewolfService.startGame(data.gameId),
+      this.werewolfService.startGame(data.gameId, socket.data.userId),
     );
   }
 
@@ -133,7 +133,7 @@ export class WerewolfGateway implements OnGatewayConnection, OnGatewayDisconnect
     @ConnectedSocket() socket: Socket,
   ) {
     return this.run(socket, data.gameId, () =>
-      this.werewolfService.restartGame(data.gameId),
+      this.werewolfService.restartGame(data.gameId, socket.data.userId),
     );
   }
 
@@ -171,7 +171,7 @@ export class WerewolfGateway implements OnGatewayConnection, OnGatewayDisconnect
     @ConnectedSocket() socket: Socket,
   ) {
     return this.run(socket, data.gameId, async () => {
-      const updated = this.werewolfService.advancePhase(data.gameId);
+      const updated = this.werewolfService.advancePhase(data.gameId, socket.data.userId);
       if (updated.phase === 'RESULT') {
         // Game statistics/match historyモジュール用に、結果確定の瞬間に1回だけ記録する。
         await this.usersService.recordMatchResult(updated);

@@ -52,8 +52,9 @@ export class WerewolfService {
     return game;
   }
 
-  restartGame(gameId: string): GameState {
+  restartGame(gameId: string, userId: number): GameState {
     const existing = this.getGame(gameId);
+    this.assertHost(existing, userId);
     if (existing.phase !== 'RESULT') {
       throw new DomainError(
         'INVALID_PHASE',
@@ -136,8 +137,10 @@ export class WerewolfService {
     return updated;
   }
 
-  startGame(gameId: string): GameState {
-    const updated = startGame(this.getGame(gameId), this.random);
+  startGame(gameId: string, userId: number): GameState {
+    const game = this.getGame(gameId);
+    this.assertHost(game, userId);
+    const updated = startGame(game, this.random);
     this.games.set(gameId, updated);
     return updated;
   }
@@ -166,8 +169,10 @@ export class WerewolfService {
     return updated;
   }
 
-  advancePhase(gameId: string): GameState {
-    const updated = advancePhase(this.getGame(gameId));
+  advancePhase(gameId: string, userId: number): GameState {
+    const game = this.getGame(gameId);
+    this.assertHost(game, userId);
+    const updated = advancePhase(game);
     this.games.set(gameId, updated);
     return updated;
   }
@@ -176,6 +181,25 @@ export class WerewolfService {
     const updated = submitVote(this.getGame(gameId), voterUserId, targetUserId);
     this.games.set(gameId, updated);
     return updated;
+  }
+
+  // 進行操作(開始・フェーズ送り・再戦)はホスト(名簿の先頭)だけに許可する。
+  // フロントはホスト以外にボタンを出さないが、gameIdを知っていれば誰でも
+  // イベントを送れるため、サーバー側でも必ず検査する。
+  private assertHost(game: GameState, userId: number): void {
+    const isPlayer = game.players.some((player) => player.userId === userId);
+    if (!isPlayer) {
+      throw new DomainError(
+        'PLAYER_NOT_FOUND',
+        'このプレイヤーはゲームに参加していません。',
+      );
+    }
+    if (game.players[0]?.userId !== userId) {
+      throw new DomainError(
+        'UNAUTHORIZED_ACTION',
+        'この操作はホストのみ実行できます。',
+      );
+    }
   }
 
   getGame(gameId: string): GameState {

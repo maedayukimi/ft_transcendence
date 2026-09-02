@@ -1,4 +1,4 @@
-# 環境変数(認証情報・JWT秘密鍵)。.env.example だけをコミットする
+
 .env
 .env.*
 !.env.example
