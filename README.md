@@ -69,8 +69,6 @@ Every change was reviewed, run, and manually tested by the team in the running a
 | kinamura | QA Engineer | Testing and quality assurance, plus refactoring across the codebase |
 | sninomiy | Developer | UI / UX and styling: front-end design system, responsive layouts, visual consistency across screens |
 
-*(Role assignment is provisional and should be updated to reflect what each member actually worked on.)*
-
 ## Project Management
 
 - **Task organization**: work was split by feature area (auth/chat, Werewolf game, profile/friends) among team members.
@@ -130,8 +128,6 @@ We targeted the required **14 points**:
 | **Total** | | | **14** | |
 
 ## Individual Contributions
-
-> _TODO: each member should fill in their own section below with what they specifically built, any challenges they ran into, and how they solved them._
 
 - **mawako**: Acted as Product Owner. Defined the game concept — we deliberately moved away from the classic Pong project and built a social deduction game instead — and settled on the simplified *One Night Ultimate Werewolf* ruleset (Werewolf / Villager / Seer / Robber, 3-5 players, a single night phase followed by discussion and a vote) that the implementation is based on. Designed the basic screen flow: lobby → role reveal → night action → discussion → voting → result, and how players move between the chat, friends, and game screens. Drove module selection and the overall product direction, decided which behaviours counted as bugs during play-testing sessions (robber role mis-attribution, abandoned games left in memory, missing reconnection after a network drop, finished lobbies being silently reused), and reviewed the resulting changes.
 - **sumedai**: Acted as Tech Lead. Chose the stack (NestJS + Next.js + TypeORM on PostgreSQL) and decided how the app is split between REST endpoints and Socket.IO gateways. Built the authentication flow (email/password signup and login, bcrypt-hashed passwords, JWT delivered in an httpOnly cookie, and the same token reused to authenticate WebSocket handshakes) and implemented the Werewolf game engine and its gateway against the rules mawako specified. Set up the deployment side: the Docker Compose stack, the nginx reverse proxy that terminates TLS so that the app, the API, and the WebSocket traffic all share a single HTTPS entry point, and the move of database credentials and the JWT secret into environment variables.
