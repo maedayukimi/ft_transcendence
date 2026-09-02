@@ -32,6 +32,11 @@ export class UsersController {
     return this.usersService.getHistory(userId);
   }
 
+  @Get('leaderboard')
+  getLeaderboard() {
+    return this.usersService.getLeaderboard();
+  }
+
   @Get('friends')
   getFriends(@Req() req: AuthenticatedRequest) {
     return this.usersService.getFriends(req.userId);
