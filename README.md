@@ -64,9 +64,9 @@ Every change was reviewed, run, and manually tested by the team in the running a
 
 | Login | Role(s) | Responsibilities |
 |---|---|---|
-| mawako | Product Owner, Tech Lead | Project direction, module selection, architecture decisions, core Werewolf game implementation |
-| sumedai | Developer | _TODO: fill in_ |
-| kinamura | Developer | _TODO: fill in_ |
+| mawako | Product Owner | Game concept for the Werewolf ruleset, the basic screen design, and overall product direction / module selection |
+| sumedai | Tech Lead | Technical direction and architecture decisions across the stack |
+| kinamura | QA Engineer | Testing and quality assurance, plus refactoring across the codebase |
 | sninomiy | Developer | UI / UX and styling: front-end design system, responsive layouts, visual consistency across screens |
 
 *(Role assignment is provisional and should be updated to reflect what each member actually worked on.)*
