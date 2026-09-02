@@ -107,48 +107,59 @@ export default function ProfilePage({
     load();
   }
 
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!profile) return <p>読み込み中...</p>;
+  if (error) return <p className="mx-auto max-w-3xl px-4 py-8 text-sm text-red-600">{error}</p>;
+  if (!profile) return <p className="mx-auto max-w-3xl px-4 py-8 text-sm text-ink-muted">読み込み中...</p>;
 
   return (
-    <div>
-      <h1>{profile.userName} のプロフィール</h1>
-      <p>登録日: {new Date(profile.timeStamp).toLocaleDateString('ja-JP')}</p>
+    <div className="mx-auto w-full max-w-3xl px-4 py-8">
+      <h1 className="mb-1">{profile.userName} のプロフィール</h1>
+      <p className="text-sm text-ink-muted">登録日: {new Date(profile.timeStamp).toLocaleDateString('ja-JP')}</p>
 
-      <h2>戦績</h2>
-      <p>
-        対戦数: {profile.stats.gamesPlayed} / 勝ち: {profile.stats.wins} / 負け: {profile.stats.losses}
-      </p>
+      <h2 className="mt-8 mb-3">戦績</h2>
+      <dl className="grid grid-cols-3 gap-3">
+        <div className="card text-center">
+          <dt className="text-xs text-ink-muted">対戦数</dt>
+          <dd className="text-2xl font-bold">{profile.stats.gamesPlayed}</dd>
+        </div>
+        <div className="card text-center">
+          <dt className="text-xs text-ink-muted">勝ち</dt>
+          <dd className="text-2xl font-bold">{profile.stats.wins}</dd>
+        </div>
+        <div className="card text-center">
+          <dt className="text-xs text-ink-muted">負け</dt>
+          <dd className="text-2xl font-bold">{profile.stats.losses}</dd>
+        </div>
+      </dl>
 
       {!profile.isSelf && (
-        <p>
+        <div className="mt-6 flex flex-wrap items-center gap-2">
           {profile.friendStatus === 'FRIENDS' && (
-            <button onClick={removeFriend}>フレンド解除</button>
+            <button className="btn" onClick={removeFriend}>フレンド解除</button>
           )}
           {profile.friendStatus === 'NONE' && (
-            <button onClick={sendFriendRequest}>フレンド申請を送る</button>
+            <button className="btn btn-primary" onClick={sendFriendRequest}>フレンド申請を送る</button>
           )}
           {profile.friendStatus === 'REQUEST_SENT' && (
             <>
-              <span>申請中です。相手の返事をお待ちください。</span>
-              <button onClick={removeFriend}>申請を取り消す</button>
+              <span className="text-sm text-ink-muted">申請中です。相手の返事をお待ちください。</span>
+              <button className="btn btn-sm" onClick={removeFriend}>申請を取り消す</button>
             </>
           )}
           {profile.friendStatus === 'REQUEST_RECEIVED' && (
             <>
-              <span>このユーザーからフレンド申請が届いています。</span>
-              <button onClick={acceptFriendRequest}>承認</button>
-              <button onClick={removeFriend}>拒否</button>
+              <span className="text-sm text-ink-muted">このユーザーからフレンド申請が届いています。</span>
+              <button className="btn btn-sm btn-primary" onClick={acceptFriendRequest}>承認</button>
+              <button className="btn btn-sm" onClick={removeFriend}>拒否</button>
             </>
           )}
-        </p>
+        </div>
       )}
 
-      <h2>対戦履歴</h2>
-      {history.length === 0 && <p>まだ対戦記録がありません。</p>}
-      <ul>
+      <h2 className="mt-8 mb-3">対戦履歴</h2>
+      {history.length === 0 && <p className="text-sm text-ink-muted">まだ対戦記録がありません。</p>}
+      <ul className="flex flex-col gap-2">
         {history.map((h, i) => (
-          <li key={i}>
+          <li className="card py-3 text-sm" key={i}>
             {new Date(h.timeStamp).toLocaleString('ja-JP')} — {h.playerCount}人戦 — 役職: {roleLabel(h.finalRole)} — {h.won ? '勝利' : '敗北'}
           </li>
         ))}
