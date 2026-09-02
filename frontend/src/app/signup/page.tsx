@@ -7,7 +7,6 @@ export default function SingUp() {
     const router = useRouter();
     async function handleSubmit(event:React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        console.log(event.currentTarget);
         const formData = new FormData(event.currentTarget);
         try {
             const response = await fetch(
@@ -33,7 +32,6 @@ export default function SingUp() {
             }
             const data = await response.json();
             setCurrentUser(data.userId, data.userName);
-            console.log(data);
             if (!data.success)
                 throw new Error('登録失敗');
 
@@ -47,13 +45,14 @@ export default function SingUp() {
         }
     }
     return (
-        <div>
-           <form onSubmit={handleSubmit}>
+        <div className="mx-auto w-full max-w-md px-4 py-10">
+           <form className="card flex flex-col gap-4" onSubmit={handleSubmit}>
                <h1>サインアップ画面</h1>
-               <hr/>
-               <label>
+               <hr className="border-line"/>
+               <label className="label">
                    ユーザー名
                    <input
+                   className="field"
                    type="text"
                    name="username"
                    required
@@ -61,17 +60,19 @@ export default function SingUp() {
                    maxLength={20}
                    />
                </label>
-               <label>
+               <label className="label">
                    メールアドレス
                    <input
+                   className="field"
                    type="email"
                    name="emailaddress"
                    required
                    />
                </label>
-               <label>
+               <label className="label">
                    パスワード
                    <input
+                   className="field"
                    type="password"
                    name="password"
                    required
@@ -79,7 +80,7 @@ export default function SingUp() {
                    maxLength={72}
                    />
                </label>
-               <input type="submit" value="サインアップ"/>
+               <input className="btn btn-primary" type="submit" value="サインアップ"/>
            </form>
         </div>
     );

@@ -6,8 +6,7 @@ services:
       POSTGRES_USER: ${DATABASE_USER:?set DATABASE_USER in .env}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?set DATABASE_PASSWORD in .env}
       POSTGRES_DB: ${DATABASE_NAME:?set DATABASE_NAME in .env}
-    # backend からは Docker ネットワーク経由で届くのでホストには公開しない
-    # (ホスト側の PostgreSQL と 5432 が衝突するのも防ぐ)
+
     expose:
       - "5432"
     volumes:

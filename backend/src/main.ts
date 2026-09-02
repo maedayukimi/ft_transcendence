@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 
@@ -19,6 +19,6 @@ async function bootstrap() {
   );
   app.setGlobalPrefix('api', { exclude: ['chat']});
   await app.listen(process.env.PORT ?? 4000);
-  console.log(`Application is running on: http://localhost:${process.env.PORT ?? 4000}`);
+  Logger.log(`Application is running on: http://localhost:${process.env.PORT ?? 4000}`, 'Bootstrap');
 }
 bootstrap();

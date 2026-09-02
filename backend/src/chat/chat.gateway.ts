@@ -13,6 +13,12 @@ import { AuthService } from 'src/api/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../api/users/users.service';
 
+// WebSocket経由の入力はHTTPのDTO(class-validator)を通らないため、
+// ハンドラ内で明示的に検証する。フロントのHTML5バリデーションは迂回できる前提で扱う。
+const MESSAGE_MAX_LENGTH = 2000;
+const ROOM_NAME_MAX_LENGTH = 50;
+const USER_NAME_MAX_LENGTH = 20;
+
 @WebSocketGateway({
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:3001',
@@ -111,6 +117,16 @@ export class ChatGateway implements OnGatewayConnection {
       return { error: '認証エラー' };
     }
 
+    if (typeof roomId !== 'string' || roomId.length === 0) {
+      return { error: 'ルームが指定されていません。' };
+    }
+    if (typeof text !== 'string' || text.trim().length === 0) {
+      return { error: 'メッセージが空です。' };
+    }
+    if (text.length > MESSAGE_MAX_LENGTH) {
+      return { error: `メッセージは${MESSAGE_MAX_LENGTH}文字以内で入力してください。` };
+    }
+
     const isMember = await this.chatService.isMember(roomId, userId);
     if (!isMember) {
       this.logger.warn(`Socket ${socket.id} (userId: ${userId}) tried to send to room ${roomId} without membership`);
@@ -119,7 +135,7 @@ export class ChatGateway implements OnGatewayConnection {
 
     try {
       // メッセージをDBに保存（引数の順番: roomId, userId, text）
-      const result = await this.chatService.registerMessage(roomId, userId, text);
+      const result = await this.chatService.registerMessage(roomId, userId, text.trim());
 
       // 同じroomの全ユーザーにブロードキャスト（送信者を含む）
       this.server.to(roomId).emit('receivedMessage', {
@@ -183,6 +199,34 @@ export class ChatGateway implements OnGatewayConnection {
         save: false, roomId: '', userNames: [], otherUserName: null,
         roomName: '', roomType: '', error: '招待する相手のユーザー名を入力してください。',
       };
+    }
+
+    if (roomType !== 'private' && roomType !== 'group') {
+      return {
+        save: false, roomId: '', userNames: [], otherUserName: null,
+        roomName: '', roomType: '', error: 'ルームの種類が不正です。',
+      };
+    }
+    if (targetUserNames.some((n) => n.length > USER_NAME_MAX_LENGTH)) {
+      return {
+        save: false, roomId: '', userNames: [], otherUserName: null,
+        roomName: '', roomType: '', error: `ユーザー名は${USER_NAME_MAX_LENGTH}文字以内です。`,
+      };
+    }
+    // グループ名はprivateルームでは使わない(相手の名前を表示する)ので、groupのみ必須。
+    if (roomType === 'group') {
+      if (typeof roomName !== 'string' || roomName.trim().length === 0) {
+        return {
+          save: false, roomId: '', userNames: [], otherUserName: null,
+          roomName: '', roomType: '', error: 'グループ名を入力してください。',
+        };
+      }
+      if (roomName.length > ROOM_NAME_MAX_LENGTH) {
+        return {
+          save: false, roomId: '', userNames: [], otherUserName: null,
+          roomName: '', roomType: '', error: `グループ名は${ROOM_NAME_MAX_LENGTH}文字以内で入力してください。`,
+        };
+      }
     }
 
     const { found, missing } = await this.chatService.resolveUserNames(targetUserNames);

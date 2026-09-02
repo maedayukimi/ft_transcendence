@@ -2,7 +2,6 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import styles from './layout.module.css';
 import Sidebar from './common/Sidebar';
 import { socket, connectSocket, logout } from '../global';
 import { ChatroomProps } from './types/chatroom';
@@ -29,11 +28,9 @@ export default function ChatLayout({
         connectSocket();
         // joinRoomイベントリスナーを設定
         const handleJoinRoom = (response: ChatroomProps) => {
-            console.log(`joinRoom received: userNames=${JSON.stringify(response.userNames)}, roomType=${response.roomType}`);
             // privateの場合は相手の名前をルーム名として使う
             if (response.roomType === 'private' && response.otherUserName) {
                 response.roomName = response.otherUserName;
-                console.log(`Set roomName to: ${response.roomName}`);
             }
             setRooms(prevRooms => [...prevRooms, response]);
         };
@@ -53,7 +50,6 @@ export default function ChatLayout({
 
         if (socket.connected) {
             socket.emit('getAllRoom', Number(getCurrentUser().userId), (response: ChatroomProps[]) => {
-            console.log(`getAllRoom response: ${JSON.stringify(response)}`);
             // privateルームの場合、roomNameを相手の名前に設定
             const processedRooms = response.map(room => {
                 if (room.roomType === 'private' && room.otherUserName) {
@@ -66,7 +62,6 @@ export default function ChatLayout({
         } else {
             socket.once('connect', () => {
             socket.emit('getAllRoom', Number(getCurrentUser().userId), (response: ChatroomProps[]) => {
-            console.log(`getAllRoom response: ${JSON.stringify(response)}`);
             // privateルームの場合、roomNameを相手の名前に設定
             const processedRooms = response.map(room => {
                 if (room.roomType === 'private' && room.otherUserName) {
@@ -78,7 +73,6 @@ export default function ChatLayout({
             });
         });
     }
-        console.log(`current_user is ${getCurrentUser().userId}`);
 
         // クリーンアップ: イベントリスナーを削除
         return () => {
@@ -95,8 +89,6 @@ export default function ChatLayout({
       socket.emit('deleteRoom', roomId, (response: ChatroomProps & { save: boolean }) => {
         if (response.save) {
           setRooms(rooms.filter((r) => r.roomId !== roomId));
-        } else {
-          console.error('ルームの削除に失敗しました:', roomId);
         }
       });
     };
@@ -110,16 +102,16 @@ export default function ChatLayout({
     }
 
     return (
-      <div className={styles.wrapper}>
-        <header className={styles.header}>
-          <h1 className={styles.title}>Chat Application</h1>
-          <nav style={{ display: 'flex', gap: '1rem' }}>
-            <Link href="/werewolf">Werewolf</Link>
-            <Link href="/friends">Friends</Link>
-            <button onClick={handleLogout}>Log Out</button>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <header className="flex flex-wrap items-center gap-3 border-b border-line bg-surface px-4 py-3 shadow-sm">
+          <h1 className="text-base font-bold sm:text-lg">Chat Application</h1>
+          <nav className="flex flex-1 flex-wrap items-center gap-1">
+            <Link className="navlink" href="/werewolf">Werewolf</Link>
+            <Link className="navlink" href="/friends">Friends</Link>
+            <button className="navlink" onClick={handleLogout}>Log Out</button>
           </nav>
-          <button onClick={ ()=> { setInviteError(null); dialogRef.current?.showModal(); } }>招待</button>
-          <dialog ref={dialogRef}>
+          <button className="btn btn-primary btn-sm" onClick={ ()=> { setInviteError(null); dialogRef.current?.showModal(); } }>招待</button>
+          <dialog className="w-[calc(100vw-2rem)] max-w-md rounded-lg border border-line p-5 backdrop:bg-black/40" ref={dialogRef}>
                 <form onSubmit={(event) => {
                     event.preventDefault();
                     const form = event.currentTarget;
@@ -129,11 +121,9 @@ export default function ChatLayout({
                     if (roomType === 'private') {
                         const targetUserName = String(formData.get('userName') ?? '').trim();
                         socket.emit('createRoom', { targetUserNames: [targetUserName], roomName: '', roomType: 'private' }, (response: ChatroomProps & { error?: string }) => {
-                        console.log(`createRoom response: userNames=${JSON.stringify(response.userNames)}, roomType=${response.roomType}`);
                         if (response.save) {
                             //privateの場合は相手の名前をルーム名として使う
                             response.roomName = response.otherUserName ?? response.roomName;
-                            console.log(`Set roomName to: ${response.roomName}`);
                             // 既に同じ相手とのprivateルームが一覧にあれば重複追加しない
                             setRooms(prev => prev.some(r => r.roomId === response.roomId) ? prev : [...prev, response]);
                             form.reset();
@@ -146,7 +136,6 @@ export default function ChatLayout({
                         // groupルームを作成して相手を招待(ユーザー名指定)
                         const groupName = String(formData.get('groupName'));
                         socket.emit('createRoom', { targetUserNames: groupUserNames, roomName: groupName, roomType: 'group' }, (response: ChatroomProps & { error?: string }) => {
-                        console.log(`createRoom response: ${JSON.stringify(response)}`);
                         if (response.save) {
                             setRooms([...rooms, response]);
                             setGroupUserNames([]);
@@ -157,26 +146,29 @@ export default function ChatLayout({
                         }
                         });
                     }
-                }}>
+                }} className="flex flex-col gap-3">
                 {/* モーダルダイアログの表示内容をprivateかgroupで切り替える */}
                     {roomType === 'private' ? <input
+                        className='field'
                         type='text'
                         name='userName'
                         placeholder='ユーザー名を入力'
                     />:
-                    <div>
+                    <div className='flex flex-col gap-3'>
                         <input
+                            className='field'
                             type='text'
                             name='groupName'
                             placeholder='グループ名を入力'
                         />
-                        <div>
+                        <div className='flex flex-col gap-2'>
                             <input
+                                className='field'
                                 type='text'
                                 id='tempUserName'
                                 placeholder='ユーザー名を入力'
                             />
-                            <button type='button' onClick={(event) => {
+                            <button className='btn btn-sm self-start' type='button' onClick={(event) => {
                                 const input = document.getElementById('tempUserName') as HTMLInputElement;
                                 const name = input.value.trim();
                                 if (name.length > 0 && !groupUserNames.includes(name)) {
@@ -185,9 +177,9 @@ export default function ChatLayout({
                                 }
                             }}>追加</button>
                             {groupUserNames.map((name, index) =>  (
-                                <div key={name}>
+                                <div className='flex items-center justify-between rounded-md bg-canvas px-3 py-2 text-sm' key={name}>
                                     <span>ユーザー名: {name}</span>
-                                    <button type='button' onClick={() => {
+                                    <button className='btn btn-sm' type='button' onClick={() => {
                                         setGroupUserNames(groupUserNames.filter((_, i) => i !== index));
                                     }}>削除</button>
                                 </div>
@@ -195,17 +187,17 @@ export default function ChatLayout({
                         </div>
                     </div>
                     }
-                    <input type='submit' value='招待'/>
-                    {inviteError && <p style={{ color: 'red' }}>{inviteError}</p>}
+                    <input className='btn btn-primary' type='submit' value='招待'/>
+                    {inviteError && <p className='text-sm text-red-600'>{inviteError}</p>}
                 </form>
-                <button onClick={() => {dialogRef.current?.close();}}>Close</button>
+                <button className='btn btn-sm mt-3 w-full' onClick={() => {dialogRef.current?.close();}}>Close</button>
             </dialog>
         </header>
-        <div className={styles.container}>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
           {/* サイドバー */}
           <Sidebar rooms={rooms} onRoomSelect={handleRoomChange} onDeleteRoom={handleDeleteRoom}/>
           {/* メインコンテンツエリア */}
-          <main className={styles.main}>
+          <main className="min-h-0 min-w-0 flex-1 overflow-hidden">
             {children}
           </main>
         </div>

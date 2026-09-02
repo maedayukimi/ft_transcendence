@@ -1,7 +1,9 @@
-# ローカル環境変数。実際の認証情報は絶対にコミットしない(テンプレートは .env.example)。
+
 .env
 .env.*
 !.env.example
 
-# macOS
+# archive/ は削除待ちの退避場所
+archive/
+
 .DS_Store

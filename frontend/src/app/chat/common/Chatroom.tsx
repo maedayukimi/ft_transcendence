@@ -3,7 +3,6 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { socket, getCurrentUser } from "../../global";
 import MessageInput from "./MessageInput";
 import { Message } from "../types/message";
-import styles from './Chatroom.module.css';
 import { ChatroomProps } from "../types/chatroom";
 import { roomIdContext } from "./roomIdContext";
 
@@ -12,14 +11,12 @@ export default function Chatroom() {
     const [chatLog, setChatLog] = useState<Message[] >([]);
     const [sendError, setSendError] = useState<string | null>(null);
     const currentUser = getCurrentUser();
-    console.log(roomId);
 
     // ルームに参加。ルームを切り替えたとき/離れるときは前のルームを
     // ちゃんとleaveしないと、そのルーム宛のブロードキャストを受信し続けてしまう。
     useEffect(() => {
         if (roomId) {
             socket.emit('joinRoom', roomId);
-            console.log(`Joined room: ${roomId}`);
         }
         return () => {
             if (roomId) {
@@ -65,7 +62,6 @@ export default function Chatroom() {
             // 過去にjoinしたまま残っている別ルーム宛のイベントを拾わないよう、
             // 表示中のルーム宛のメッセージだけ反映する。
             if (String(message.roomId) !== roomId) return;
-            console.log('received:', message);
             setChatLog(prev => [...prev, message]);  // 関数型更新
         };
 
@@ -87,34 +83,32 @@ export default function Chatroom() {
     const handleSendMessage = useCallback((text: string, roomId: string): void => {
         socket.emit('sendMessage', { roomId: roomId, text: text }, (response: any) => {
             if (response.error) {
-                console.error('メッセージ送信エラー:', response.error);
                 setSendError(response.error);
             } else {
                 setSendError(null);
-                console.log('メッセージ送信成功:', response);
                 // receivedMessageイベントでchatLogが更新されるので、ここでは何もしない
             }
         });
     }, []);
     return (
-        <div className={styles.container}>
-            <div className={styles.messageList}>
+        <div className="flex h-full flex-col bg-surface">
+            <div className="flex-1 overflow-y-auto p-4">
                 {chatLog.map((msg) => {
                     const isMyMessage = currentUser.userId === msg.userId;
                     return (
                     <div
-                        className={`${styles.messageWrapper} ${isMyMessage ? styles.messageWrapperRight : styles.messageWrapperLeft}`}
+                        className={`mb-2 flex ${isMyMessage ? 'justify-end' : 'justify-start'}`}
                         key={msg.msgId}
                     >
-                        <div className={`${styles.message} ${isMyMessage ? styles.messageRight : styles.messageLeft}`}>
-                            {!isMyMessage && <span className={styles.username}>{msg.userName}:</span>}
+                        <div className={`max-w-[85%] rounded-lg px-3 py-2 text-sm break-words sm:max-w-[70%] ${isMyMessage ? 'bg-brand text-white' : 'bg-canvas text-ink'}`}>
+                            {!isMyMessage && <span className="mr-1 font-bold">{msg.userName}:</span>}
                             {msg.text}
                         </div>
                     </div>
                     )})
                 }
             </div>
-            {sendError && <p style={{ color: 'red' }}>{sendError}</p>}
+            {sendError && <p className="px-4 pb-2 text-sm text-red-600">{sendError}</p>}
             <MessageInput onSendMessage={handleSendMessage}/>
         </div>
     );
