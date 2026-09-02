@@ -67,7 +67,7 @@ Every change was reviewed, run, and manually tested by the team in the running a
 | mawako | Product Owner, Tech Lead | Project direction, module selection, architecture decisions, core Werewolf game implementation |
 | sumedai | Developer | _TODO: fill in_ |
 | kinamura | Developer | _TODO: fill in_ |
-| sninomiy | Developer | _TODO: fill in_ |
+| sninomiy | Developer | UI / UX and styling: front-end design system, responsive layouts, visual consistency across screens |
 
 *(Role assignment is provisional and should be updated to reflect what each member actually worked on.)*
 
@@ -133,5 +133,5 @@ We targeted the required **14 points**:
 - **mawako**: Directed module selection and architecture. Implemented the Werewolf game end-to-end (game rules, WebSocket gateway, frontend UI) together with Claude Code, including several bug fixes found through manual play-testing (robber role mis-attribution, abandoned-game memory leak, missing reconnection logic, stale finished-lobby reuse). Implemented the profile/friends/match-history module, wired real environment-variable configuration (`.env`) for database credentials and the JWT secret, switched password storage to bcrypt hashing, added the Privacy Policy / Terms of Service pages, added request validation (class-validator on the backend, HTML5 constraints on the frontend forms), and set up HTTPS (an nginx reverse proxy with a self-signed certificate, single HTTPS entry point for the frontend, API, and WebSocket traffic).
 - **sumedai**: _TODO_
 - **kinamura**: _TODO_
-- **sninomiy**: _TODO_
+- **sninomiy**: Owned the UI/UX and styling side of the front-end. Introduced Tailwind CSS as the project's styling solution — it was listed as a dependency but never actually loaded, so the app was really running on CSS Modules and inline styles — and rewrote every screen and component on top of a small shared design system (theme tokens plus `btn` / `field` / `card` / `navlink` classes) so that the UI is visually consistent instead of styled ad hoc per page. Made the layouts responsive for both desktop and mobile/tablet widths, including the chat screen, whose height had been derived from a hard-coded footer size. Also corrected the database schema section of this README, which no longer matched the `Friend` entity in the code.
 
