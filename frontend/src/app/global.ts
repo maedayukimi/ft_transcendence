@@ -65,6 +65,10 @@ export const setCurrentUser = (userId: string, userName: string) => {
   }
 }
 
+// 未ログイン時に返す値。毎回新しいオブジェクトを作ると useSyncExternalStore の
+// getSnapshot が「値が変わった」と判定して無限再レンダーになるため、同じ参照を使い回す。
+const ANONYMOUS_USER = { userId: '', userName: '' };
+
 export const getCurrentUser = () => {
   // メモリにあればそれを返す
   if (global.currentUser) {
@@ -80,7 +84,7 @@ export const getCurrentUser = () => {
     }
   }
 
-  return { userId: '', userName: '' };
+  return ANONYMOUS_USER;
 }
 
 export const logout = async () => {
@@ -98,7 +102,7 @@ export const logout = async () => {
     global.werewolfSocketInstance.disconnect();
   }
 
-  global.currentUser = { userId: '', userName: '' };
+  global.currentUser = ANONYMOUS_USER;
   if (typeof window !== 'undefined') {
     localStorage.removeItem('currentUser');
   }

@@ -108,6 +108,7 @@ export default function ChatLayout({
           <nav className="flex flex-1 flex-wrap items-center gap-1">
             <Link className="navlink" href="/werewolf">Werewolf</Link>
             <Link className="navlink" href="/friends">Friends</Link>
+            <Link className="navlink" href="/leaderboard">Leaderboard</Link>
             <button className="navlink" onClick={handleLogout}>Log Out</button>
           </nav>
           <button className="btn btn-primary btn-sm" onClick={ ()=> { setInviteError(null); dialogRef.current?.showModal(); } }>招待</button>

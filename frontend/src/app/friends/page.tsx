@@ -127,6 +127,7 @@ export default function FriendsPage() {
       <nav className="mb-6 flex flex-wrap items-center gap-1">
         <Link className="navlink" href="/chat">Chat</Link>
         <Link className="navlink" href="/werewolf">Werewolf</Link>
+        <Link className="navlink" href="/leaderboard">Leaderboard</Link>
         <button className="navlink" onClick={handleLogout}>Log Out</button>
       </nav>
       <h1 className="mb-4">フレンド一覧</h1>

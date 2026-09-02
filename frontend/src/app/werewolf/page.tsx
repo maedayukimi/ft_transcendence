@@ -41,6 +41,7 @@ export default function WerewolfLobby() {
       <nav className="mb-6 flex flex-wrap items-center gap-1">
         <Link className="navlink" href="/chat">Chat</Link>
         <Link className="navlink" href="/friends">Friends</Link>
+        <Link className="navlink" href="/leaderboard">Leaderboard</Link>
         <button className="navlink" onClick={handleLogout}>Log Out</button>
       </nav>
       <h1 className="mb-4">人狼ゲーム</h1>
