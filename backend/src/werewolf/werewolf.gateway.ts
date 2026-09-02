@@ -15,6 +15,8 @@ import { DomainError } from './werewolf.errors';
 import type { SeerAction } from './werewolf.types';
 import { UsersService } from '../api/users/users.service';
 
+const GAME_ID_MAX_LENGTH = 50;
+
 @WebSocketGateway({
   namespace: '/werewolf',
   cors: {
@@ -210,6 +212,19 @@ export class WerewolfGateway implements OnGatewayConnection, OnGatewayDisconnect
     gameId: string,
     action: () => unknown | Promise<unknown>,
   ): Promise<{ success: true } | { success: false; code: string; message: string }> {
+    // gameIdはクライアントが自由に入力する文字列で、そのままSocket.IOのルーム名に
+    // なる。全ハンドラがここを通るので、入口で一度だけ検証しておく。
+    if (typeof gameId !== 'string' || gameId.trim().length === 0) {
+      return { success: false, code: 'INVALID_GAME_ID', message: 'ゲームIDを入力してください。' };
+    }
+    if (gameId.length > GAME_ID_MAX_LENGTH) {
+      return {
+        success: false,
+        code: 'INVALID_GAME_ID',
+        message: `ゲームIDは${GAME_ID_MAX_LENGTH}文字以内で入力してください。`,
+      };
+    }
+
     try {
       await action();
       socket.data.gameId = gameId;
